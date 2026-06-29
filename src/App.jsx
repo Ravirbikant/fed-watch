@@ -27,9 +27,11 @@ const FeedRow = memo(({ entry, inflationEntries, highlightInflation }) => {
       <td>{entry.id}</td>
       <td>{entry.source}</td>
       <td>{entry.category}</td>
-      <td>{entry.value}</td>
+      <td>{entry.value.toLocaleString()}</td>
       <td>{entry.timestamp.toISOString()}</td>
-      <td className={`signal-${signal.toLowerCase()}`}>{signal}</td>
+      <td>
+        <span className={`badge badge-${signal.toLowerCase()}`}>{signal}</span>
+      </td>
     </tr>
   );
 });
@@ -38,6 +40,7 @@ function App() {
   const [data, setData] = useState(baseData);
   const [search, setSearch] = useState("");
   const [highlightInflation, setHighlightInflation] = useState(false);
+  const [tick, setTick] = useState(false);
 
   const inflationEntries = useMemo(
     () => data.filter((d) => d.category === "Inflation"),
@@ -54,6 +57,7 @@ function App() {
         timestamp: new Date(),
       };
       setData((prev) => [newEntry, ...prev.slice(0, 49)]);
+      setTick((t) => !t);
     }, 2000);
     return () => clearInterval(interval);
   }, []);
@@ -65,7 +69,13 @@ function App() {
 
   return (
     <div className="container">
-      <h1 className="header">FED WATCH</h1>
+      <div className="header-bar">
+        <div className="header-left">
+          <span className={`pulse ${tick ? "pulse-on" : ""}`} />
+          <h1 className="header">FED WATCH</h1>
+        </div>
+        <span className="live-label">LIVE</span>
+      </div>
       <div className="controls">
         <input
           value={search}
