@@ -1,0 +1,74 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0a0a0f;
+  color: #00ff88;
+  font-family: monospace;
+}
+
+.container {
+  padding: 24px;
+}
+
+.header {
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: #00ff88;
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+input {
+  background: #111;
+  border: 1px solid #00ff88;
+  color: #00ff88;
+  padding: 8px 12px;
+  font-family: monospace;
+  outline: none;
+}
+
+button {
+  background: transparent;
+  border: 1px solid #00ff88;
+  color: #00ff88;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-family: monospace;
+}
+
+button.active {
+  background: #00ff88;
+  color: #0a0a0f;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #00ff88;
+  color: #888;
+  font-size: 12px;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #111;
+  font-size: 13px;
+}
+
+.spike {
+  background: rgba(255, 50, 50, 0.15);
+  color: #ff4444;
+}
