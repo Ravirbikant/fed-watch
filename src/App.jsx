@@ -1,23 +1,48 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, memo } from "react";
 import rawData from "./data/Sample-data.json";
 import { normalizeData } from "./utils/normalize.js";
 import "./App.css";
 
 const baseData = normalizeData(rawData);
-const inflationEntries = baseData.filter((d) => d.category === "Inflation");
 
-function isInflationSpike(entry) {
+function isInflationSpike(entry, inflationEntries) {
   if (entry.category !== "Inflation") return false;
   const idx = inflationEntries.findIndex((d) => d.id === entry.id);
-  if (idx === 0) return false;
+  if (idx <= 0) return false;
   const prev = inflationEntries[idx - 1];
   return ((entry.value - prev.value) / prev.value) * 100 > 5;
 }
+
+function getSignal(entry, inflationEntries) {
+  if (entry.category === "Inflation" && isInflationSpike(entry, inflationEntries)) return "BAD";
+  if (entry.category === "Employment" && entry.value > 400000) return "GOOD";
+  if (entry.category === "Rates" && entry.value > 6) return "BAD";
+  return "NEUTRAL";
+}
+
+const FeedRow = memo(({ entry, inflationEntries, highlightInflation }) => {
+  const signal = getSignal(entry, inflationEntries);
+  return (
+    <tr className={highlightInflation && isInflationSpike(entry, inflationEntries) ? "spike" : ""}>
+      <td>{entry.id}</td>
+      <td>{entry.source}</td>
+      <td>{entry.category}</td>
+      <td>{entry.value}</td>
+      <td>{entry.timestamp.toISOString()}</td>
+      <td className={`signal-${signal.toLowerCase()}`}>{signal}</td>
+    </tr>
+  );
+});
 
 function App() {
   const [data, setData] = useState(baseData);
   const [search, setSearch] = useState("");
   const [highlightInflation, setHighlightInflation] = useState(false);
+
+  const inflationEntries = useMemo(
+    () => data.filter((d) => d.category === "Inflation"),
+    [data]
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -33,8 +58,8 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const filtered = useMemo(() =>
-    data.filter((d) => d.source.includes(search.toUpperCase())),
+  const filtered = useMemo(
+    () => data.filter((d) => d.source.includes(search.toUpperCase())),
     [data, search]
   );
 
@@ -62,20 +87,17 @@ function App() {
             <th>CATEGORY</th>
             <th>VALUE</th>
             <th>TIMESTAMP</th>
+            <th>SIGNAL</th>
           </tr>
         </thead>
         <tbody>
           {filtered.map((entry) => (
-            <tr
+            <FeedRow
               key={entry.id}
-              className={highlightInflation && isInflationSpike(entry) ? "spike" : ""}
-            >
-              <td>{entry.id}</td>
-              <td>{entry.source}</td>
-              <td>{entry.category}</td>
-              <td>{entry.value}</td>
-              <td>{entry.timestamp.toISOString()}</td>
-            </tr>
+              entry={entry}
+              inflationEntries={inflationEntries}
+              highlightInflation={highlightInflation}
+            />
           ))}
         </tbody>
       </table>

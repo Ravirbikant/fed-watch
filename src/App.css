@@ -52,6 +52,7 @@ button.active {
 table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 th {
@@ -66,9 +67,27 @@ td {
   padding: 10px;
   border-bottom: 1px solid #111;
   font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 16.66%;
 }
 
 .spike {
   background: rgba(255, 50, 50, 0.15);
   color: #ff4444;
+}
+
+.signal-good {
+  color: #00ff88;
+  font-weight: bold;
+}
+
+.signal-bad {
+  color: #ff4444;
+  font-weight: bold;
+}
+
+.signal-neutral {
+  color: #888;
 }
